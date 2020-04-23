@@ -25,12 +25,18 @@
   "repoPackagePath": "package/com.unity.formats.usd",
   "repository": {
     "type": "git",
-    "url": "git@github.com:Unity-Technologies/usd-unity-sdk.git",
-    "revision": "a3fec00982670f51f5277ec646a0f195fd86b97c"
+    "url": "https://github.com/Unity-Technologies/usd-unity-sdk.git",
+    "revision": "711a72d6496d00052b36e6210b591922ed9a86cf"
   },
-  "unity": "2018.3",
+  "unity": "2018.4",
   "unityRelease": "4f1",
-  "version": "1.0.2-preview.1",
+  "version": "1.0.3-preview.2",
+  "relatedPackages": {
+    "com.unity.formats.usd.tests": "1.0.3-preview.2"
+  },
+  "upmCi": {
+    "footprint": "51bf2a7aae3f71d2266323df16791bbd507ef504"
+  },
   "samples": [
     {
       "displayName": "ExportMesh",
