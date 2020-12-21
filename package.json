@@ -2,7 +2,7 @@
   "dependencies": {
     "com.unity.timeline": "1.0.0"
   },
-  "description": "The Unity USD package contains a set of libraries designed to support the use of Pixar's Universal Scene Description (USD) in Unity. The goal of this package is to make it maximally easy to integrate USD using native Unity & C# data types with a familiar serialization paradigm and little prior knowledge of USD. USD enables round-trip asset workflows between digital content creation tools like Maya, 3ds Max, Houdini, Katana, Nuke, Modo, Sketchup, Substance Designer, and Substance Painter. \n\nUnlike other asset file formats, Universal Scene Description is designed to support an entire asset pipeline and to enable teams to work in parallel using asset references and overrides. \n\nThis package includes ready-to-use binaries and examples to allow anyone to easily jump-in.\n\nUSD version: 19.05",
+  "description": "The Unity USD package contains a set of libraries designed to support the use of Pixar's Universal Scene Description (USD) in Unity. The goal of this package is to make it maximally easy to integrate USD using native Unity & C# data types with a familiar serialization paradigm and little prior knowledge of USD. USD enables round-trip asset workflows between digital content creation tools like Maya, 3ds Max, Houdini, Katana, Nuke, Modo, Sketchup, Substance Designer, and Substance Painter. \n\nUnlike other asset file formats, Universal Scene Description is designed to support an entire asset pipeline and to enable teams to work in parallel using asset references and overrides. \n\nThis package includes ready-to-use binaries and examples to allow anyone to easily jump-in.\n\nUSD version: 20.08",
   "displayName": "USD",
   "keywords": [
     "usd",
@@ -24,18 +24,17 @@
   "name": "com.unity.formats.usd",
   "repoPackagePath": "package/com.unity.formats.usd",
   "repository": {
-    "type": "git",
     "url": "https://github.com/Unity-Technologies/usd-unity-sdk.git",
-    "revision": "711a72d6496d00052b36e6210b591922ed9a86cf"
+    "type": "git",
+    "revision": "2889d6490859b66eecb60e1730250b2ec7168d02"
   },
-  "unity": "2018.4",
-  "unityRelease": "4f1",
-  "version": "1.0.3-preview.2",
+  "unity": "2019.4",
+  "version": "2.0.0-exp.1",
   "relatedPackages": {
-    "com.unity.formats.usd.tests": "1.0.3-preview.2"
+    "com.unity.formats.usd.tests": "2.0.0-exp.1"
   },
   "upmCi": {
-    "footprint": "51bf2a7aae3f71d2266323df16791bbd507ef504"
+    "footprint": "b187c62d95c3a69e42ac8922e51bd2a5dccb6e8c"
   },
   "samples": [
     {
