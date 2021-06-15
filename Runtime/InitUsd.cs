@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using USD.NET;
 using USD.NET.Unity;
@@ -40,8 +41,8 @@ namespace Unity.Formats.USD
                 // The TypeBinder will generate code at runtime as a performance optimization, this must
                 // be disabled when IL2CPP is enabled, since dynamic code generation is not possible.
 #if ENABLE_IL2CPP
-        TypeBinder.EnableCodeGeneration = false;
-        Debug.Log("USD: Dynamic code generation disabled for IL2CPP.");
+                TypeBinder.EnableCodeGeneration = false;
+                Debug.Log("USD: Dynamic code generation disabled for IL2CPP.");
 #endif
 
                 // Type registration enables automatic conversion from Unity-native types to USD types (e.g.
@@ -64,28 +65,27 @@ namespace Unity.Formats.USD
         // USD has several auxillary C++ plugin discovery files which must be discoverable at run-time
         // We store those libs in Support/ThirdParty/Usd and then set a magic environment variable to let
         // USD's libPlug know where to look to find them.
-        private static void SetupUsdPath()
+        private static void SetupUsdPath([CallerFilePath] string sourceFilePath = "")
         {
 #if UNITY_EDITOR
-            // TODO: this is not robust, e.g. if anyone changes CWD from the default, package resolution
-            // will fail. Following up with UPM devs to see what we can do about it.
-            var supPath = System.IO.Path.GetFullPath("Packages/com.unity.formats.usd/Runtime/Plugins");
+            var fileInfo = new System.IO.FileInfo(sourceFilePath);
+            var supPath = System.IO.Path.Combine(fileInfo.DirectoryName, "Plugins");
 #else
-      var supPath = UnityEngine.Application.dataPath.Replace("\\", "/") + "/Plugins";
+            var supPath = UnityEngine.Application.dataPath.Replace("\\", "/") + "/Plugins";
 #endif
 
 #if (UNITY_EDITOR_WIN)
             supPath += @"/x86_64/usd/";
 #elif (UNITY_EDITOR_OSX)
-      supPath += @"/x86_64/usd/";
+            supPath += @"/x86_64/usd/";
 #elif (UNITY_EDITOR_LINUX)
-      supPath += @"/x86_64/usd/";
+            supPath += @"/x86_64/usd/";
 #elif (UNITY_STANDALONE_WIN)
-      supPath += @"/usd/";
+            supPath += @"/usd/";
 #elif (UNITY_STANDALONE_OSX)
-      supPath += @"/usd/";
+            supPath += @"/usd/";
 #elif (UNITY_STANDALONE_LINUX)
-      supPath += @"/usd/";
+            supPath += @"/usd/";
 #endif
 
             Debug.LogFormat("Registering plugins: {0}", supPath);

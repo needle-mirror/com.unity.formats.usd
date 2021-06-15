@@ -1,4 +1,4 @@
-﻿// Copyright 2018 Jeremy Cowles. All rights reserved.
+// Copyright 2018 Jeremy Cowles. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,16 +21,15 @@ using UnityEditor.AssetImporters;
 #else
 using UnityEditor.Experimental.AssetImporters;
 #endif
-using USD.NET.Unity;
 
 #if false
 [CustomEditor(typeof(UsdScriptedImporter))]
-public class UsdScriptedImporterEditor : ScriptedImporterEditor {
-
-  public override void OnInspectorGUI() {
-    var importer = serializedObject.targetObject as UsdScriptedImporter;
-    base.DrawDefaultInspector();
-  }
-
+public class UsdScriptedImporterEditor : ScriptedImporterEditor
+{
+    public override void OnInspectorGUI()
+    {
+        var importer = serializedObject.targetObject as UsdScriptedImporter;
+        base.DrawDefaultInspector();
+    }
 }
 #endif

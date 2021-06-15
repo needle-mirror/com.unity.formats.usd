@@ -1,6 +1,8 @@
 {
   "dependencies": {
-    "com.unity.timeline": "1.0.0"
+    "com.unity.timeline": "1.0.0",
+    "com.unity.modules.screencapture": "1.0.0",
+    "com.unity.modules.physics": "1.0.0"
   },
   "description": "The Unity USD package contains a set of libraries designed to support the use of Pixar's Universal Scene Description (USD) in Unity. The goal of this package is to make it maximally easy to integrate USD using native Unity & C# data types with a familiar serialization paradigm and little prior knowledge of USD. USD enables round-trip asset workflows between digital content creation tools like Maya, 3ds Max, Houdini, Katana, Nuke, Modo, Sketchup, Substance Designer, and Substance Painter. \n\nUnlike other asset file formats, Universal Scene Description is designed to support an entire asset pipeline and to enable teams to work in parallel using asset references and overrides. \n\nThis package includes ready-to-use binaries and examples to allow anyone to easily jump-in.\n\nUSD version: 20.08",
   "displayName": "USD",
@@ -26,15 +28,15 @@
   "repository": {
     "url": "https://github.com/Unity-Technologies/usd-unity-sdk.git",
     "type": "git",
-    "revision": "2889d6490859b66eecb60e1730250b2ec7168d02"
+    "revision": "c60d9742e250cda5fcaf3113bbcb18a754bcfd28"
   },
   "unity": "2019.4",
-  "version": "2.0.0-exp.1",
+  "version": "3.0.0-exp.1",
   "relatedPackages": {
-    "com.unity.formats.usd.tests": "2.0.0-exp.1"
+    "com.unity.formats.usd.tests": "3.0.0-exp.1"
   },
   "upmCi": {
-    "footprint": "b187c62d95c3a69e42ac8922e51bd2a5dccb6e8c"
+    "footprint": "2494783abfd78e4c55c19870027acbcbb2d0bf93"
   },
   "samples": [
     {

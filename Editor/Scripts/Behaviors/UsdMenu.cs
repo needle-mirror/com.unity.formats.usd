@@ -1,4 +1,4 @@
-﻿// Copyright 2018 Jeremy Cowles. All rights reserved.
+// Copyright 2018 Jeremy Cowles. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,54 +17,11 @@ using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using USD.NET;
-using USD.NET.Unity;
 
 namespace Unity.Formats.USD
 {
-    public class UsdMenu : MonoBehaviour
+    public static class UsdMenu
     {
-        public static Scene InitForSave(string defaultName, string fileExtension = "usd,usda,usdc")
-        {
-            var filePath = EditorUtility.SaveFilePanel("Export USD File", "", defaultName, fileExtension);
-
-            if (filePath == null || filePath.Length == 0)
-            {
-                return null;
-            }
-
-            var fileDir = Path.GetDirectoryName(filePath);
-
-            if (!Directory.Exists(fileDir))
-            {
-                var di = Directory.CreateDirectory(fileDir);
-                if (!di.Exists)
-                {
-                    Debug.LogError("Failed to create directory: " + fileDir);
-                    return null;
-                }
-            }
-
-            InitUsd.Initialize();
-            var scene = Scene.Create(filePath);
-            scene.Time = 0;
-            scene.StartTime = 0;
-            scene.EndTime = 0;
-            return scene;
-        }
-
-        public static Scene InitForOpen()
-        {
-            string path = EditorUtility.OpenFilePanel("Import USD File", "", "usd,usda,usdc,abc");
-            if (path == null || path.Length == 0)
-            {
-                return null;
-            }
-
-            InitUsd.Initialize();
-            var stage = pxr.UsdStage.Open(path, pxr.UsdStage.InitialLoadSet.LoadNone);
-            return Scene.Open(stage);
-        }
-
         [MenuItem("USD/Export Selected with Children", true)]
         static bool EnableMenuExportSelectedWithChildren()
         {
@@ -74,7 +31,10 @@ namespace Unity.Formats.USD
         [MenuItem("USD/Export Selected with Children", priority = 50)]
         static void MenuExportSelectedWithChildren()
         {
-            ExportSelected(BasisTransformation.SlowAndSafe);
+            var go = Selection.gameObjects.First();
+            var filePath = EditorUtility.SaveFilePanel("Export USD File", "", go.name, "usd,usda,usdc");
+            var scene = ExportHelpers.InitForSave(filePath);
+            ExportHelpers.ExportGameObjects(Selection.gameObjects, scene, BasisTransformation.SlowAndSafe);
         }
 
         [MenuItem("USD/Export Transform Overrides", true)]
@@ -87,7 +47,8 @@ namespace Unity.Formats.USD
         static public void MenuExportTransforms()
         {
             var root = Selection.activeGameObject.GetComponentInParent<UsdAsset>();
-            var overs = InitForSave(Path.GetFileNameWithoutExtension(root.usdFullPath) + "_overs");
+            var filePath = EditorUtility.SaveFilePanel("Export USD File", "", Path.GetFileNameWithoutExtension(root.usdFullPath) + "_overs", "usd,usda,usdc");
+            var overs = ExportHelpers.InitForSave(filePath);
             root.ExportOverrides(overs);
         }
 
@@ -124,161 +85,26 @@ namespace Unity.Formats.USD
         }
 
 #if false
-    [MenuItem("USD/Save Unity as USD (Experimental)", true)]
-    static bool EnableMenuSaveAsUsd() {
-      return Selection.gameObjects.Length == 1;
-    }
-    [MenuItem("USD/Save Unity as USD (Experimental)", priority = 170)]
-    static void MenuExportSaveAsUsd() {
-      ExportSelected(BasisTransformation.SlowAndSafe, exportMonoBehaviours: true);
-    }
-
-    [MenuItem("USD/Load Unity from USD (Experimental)", priority = 170)]
-    static void MenuExportLoadFromUsd() {
-      var scene = InitForOpen();
-      if (scene == null) {
-        return;
-      }
-      string path = scene.FilePath;
-
-      // Time-varying data is not supported and often scenes are written without "Default" time
-      // values, which makes setting an arbitrary time safer (because if only default was authored
-      // the time will be ignored and values will resolve to default time automatically).
-      scene.Time = 1.0;
-
-      var importOptions = new SceneImportOptions();
-      importOptions.projectAssetPath = GetSelectedAssetPath();
-      importOptions.changeHandedness = BasisTransformation.SlowAndSafe;
-      importOptions.materialImportMode = MaterialImportMode.ImportDisplayColor;
-      importOptions.usdRootPath = GetDefaultRoot(scene);
-      importOptions.importMonoBehaviours = true;
-
-      GameObject root = new GameObject(GetObjectName(importOptions.usdRootPath, path));
-
-      if (Selection.gameObjects.Length > 0) {
-        root.transform.SetParent(Selection.gameObjects[0].transform);
-      }
-
-      try {
-        UsdToGameObject(root, scene, importOptions);
-      } finally {
-        scene.Close();
-      }
-    }
-#endif
-
-        static private pxr.SdfPath GetDefaultRoot(Scene scene)
+        [MenuItem("USD/Save Unity as USD (Experimental)", true)]
+        static bool EnableMenuSaveAsUsd()
         {
-            // We can't safely assume the default prim is the model root, because Alembic files will
-            // always have a default prim set arbitrarily.
-
-            // If there is only one root prim, reference this prim.
-            var children = scene.Stage.GetPseudoRoot().GetChildren().ToList();
-            if (children.Count == 1)
-            {
-                return children[0].GetPath();
-            }
-
-            // Otherwise there are 0 or many root prims, in this case the best option is to reference
-            // them all, to avoid confusion.
-            return pxr.SdfPath.AbsoluteRootPath();
+            return Selection.gameObjects.Length == 1;
         }
 
-        static void ExportSelected(BasisTransformation basisTransform,
-            string fileExtension = "usd,usda,usdc",
-            bool exportMonoBehaviours = false)
+        [MenuItem("USD/Save Unity as USD (Experimental)", priority = 170)]
+        static void MenuExportSaveAsUsd()
         {
-            Scene scene = null;
-
-            foreach (GameObject go in Selection.gameObjects)
-            {
-                if (scene == null)
-                {
-                    scene = InitForSave(go.name, fileExtension);
-                    if (scene == null)
-                    {
-                        return;
-                    }
-                }
-
-                try
-                {
-                    SceneExporter.Export(go, scene, basisTransform,
-                        exportUnvarying: true, zeroRootTransform: false,
-                        exportMonoBehaviours: exportMonoBehaviours);
-                }
-                catch (System.Exception ex)
-                {
-                    Debug.LogException(ex);
-                    continue;
-                }
-            }
-
-            if (scene != null)
-            {
-                scene.Save();
-                scene.Close();
-            }
+            ExportSelected(BasisTransformation.SlowAndSafe, exportMonoBehaviours: true);
         }
 
-        [MenuItem("USD/Import as GameObjects", priority = 0)]
-        public static void MenuImportAsGameObjects()
+        [MenuItem("USD/Load Unity from USD (Experimental)", priority = 170)]
+        static void MenuExportLoadFromUsd()
         {
             var scene = InitForOpen();
             if (scene == null)
             {
                 return;
             }
-
-            ImportSceneAsGameObject(scene);
-            scene.Close();
-        }
-
-        public static GameObject ImportSceneAsGameObject(Scene scene, SceneImportOptions importOptions = null)
-        {
-            string path = scene.FilePath;
-
-            // Time-varying data is not supported and often scenes are written without "Default" time
-            // values, which makes setting an arbitrary time safer (because if only default was authored
-            // the time will be ignored and values will resolve to default time automatically).
-            scene.Time = 1.0;
-
-            if (importOptions == null)
-            {
-                importOptions = new SceneImportOptions();
-                importOptions.changeHandedness = BasisTransformation.SlowAndSafe;
-                importOptions.materialImportMode = MaterialImportMode.ImportDisplayColor;
-                importOptions.usdRootPath = GetDefaultRoot(scene);
-            }
-
-            GameObject root = new GameObject(GetObjectName(importOptions.usdRootPath, path));
-
-            if (Selection.gameObjects.Length > 0)
-            {
-                root.transform.SetParent(Selection.gameObjects[0].transform);
-            }
-
-            try
-            {
-                UsdToGameObject(root, scene, importOptions);
-                return root;
-            }
-            catch (SceneImporter.ImportException)
-            {
-                GameObject.DestroyImmediate(root);
-                return null;
-            }
-        }
-
-        [MenuItem("USD/Import as Prefab", priority = 1)]
-        public static void MenuImportAsPrefab()
-        {
-            var scene = InitForOpen();
-            if (scene == null)
-            {
-                return;
-            }
-
             string path = scene.FilePath;
 
             // Time-varying data is not supported and often scenes are written without "Default" time
@@ -291,64 +117,63 @@ namespace Unity.Formats.USD
             importOptions.changeHandedness = BasisTransformation.SlowAndSafe;
             importOptions.materialImportMode = MaterialImportMode.ImportDisplayColor;
             importOptions.usdRootPath = GetDefaultRoot(scene);
+            importOptions.importMonoBehaviours = true;
 
-            var invalidChars = Path.GetInvalidFileNameChars();
-            var prefabName = string.Join("_", GetPrefabName(path).Split(invalidChars,
-                System.StringSplitOptions.RemoveEmptyEntries)).TrimEnd('.');
-            string prefabPath = importOptions.projectAssetPath + prefabName + ".prefab";
-            prefabPath = AssetDatabase.GenerateUniqueAssetPath(prefabPath);
-            string clipName = Path.GetFileNameWithoutExtension(path);
+            GameObject root = new GameObject(GetObjectName(importOptions.usdRootPath, path));
 
-            var go = new GameObject(GetObjectName(importOptions.usdRootPath, path));
+            if (Selection.gameObjects.Length > 0)
+            {
+                root.transform.SetParent(Selection.gameObjects[0].transform);
+            }
+
             try
             {
-                UsdToGameObject(go, scene, importOptions);
-                SceneImporter.SavePrefab(go, prefabPath, clipName, importOptions);
+                UsdToGameObject(root, scene, importOptions);
             }
             finally
             {
-                GameObject.DestroyImmediate(go);
                 scene.Close();
             }
         }
 
-        [MenuItem("USD/Import as Timeline Clip", priority = 2)]
-        public static void MenuImportAsTimelineClip()
+#endif
+
+
+        [MenuItem("USD/Import as GameObjects", priority = 0)]
+        public static void MenuImportAsGameObjects()
         {
-            var scene = InitForOpen();
+            var scene = ImportHelpers.InitForOpen();
             if (scene == null)
             {
                 return;
             }
 
-            string path = scene.FilePath;
+            ImportHelpers.ImportSceneAsGameObject(scene, Selection.activeGameObject);
+            scene.Close();
+        }
 
-            var invalidChars = Path.GetInvalidFileNameChars();
-            var prefabName = string.Join("_", GetPrefabName(path).Split(invalidChars,
-                System.StringSplitOptions.RemoveEmptyEntries)).TrimEnd('.');
-
-            string prefabPath = GetSelectedAssetPath() + prefabName + ".prefab";
-            prefabPath = AssetDatabase.GenerateUniqueAssetPath(prefabPath);
-            string clipName = Path.GetFileNameWithoutExtension(path);
-
-            var importOptions = new SceneImportOptions();
-            importOptions.projectAssetPath = GetSelectedAssetPath();
-            importOptions.changeHandedness = BasisTransformation.FastWithNegativeScale;
-            importOptions.materialImportMode = MaterialImportMode.ImportDisplayColor;
-            importOptions.usdRootPath = GetDefaultRoot(scene);
-
-            var go = new GameObject(GetObjectName(importOptions.usdRootPath, path));
-
-            try
+        [MenuItem("USD/Import as Prefab", priority = 1)]
+        public static void MenuImportAsPrefab()
+        {
+            var scene = ImportHelpers.InitForOpen();
+            if (scene == null)
             {
-                // Ensure we have at least one GameObject with the import settings.
-                XformImporter.BuildSceneRoot(scene, go.transform, importOptions);
-                SceneImporter.SavePrefab(go, prefabPath, clipName, importOptions);
+                return;
             }
-            finally
+
+            ImportHelpers.ImportAsPrefab(scene);
+        }
+
+        [MenuItem("USD/Import as Timeline Clip", priority = 2)]
+        public static void MenuImportAsTimelineClip()
+        {
+            var scene = ImportHelpers.InitForOpen();
+            if (scene == null)
             {
-                GameObject.DestroyImmediate(go);
+                return;
             }
+
+            ImportHelpers.ImportAsTimelineClip(scene);
         }
 
         [MenuItem("USD/Unload Subtree", true)]
@@ -417,70 +242,6 @@ namespace Unity.Formats.USD
                 Debug.LogWarning("No USD payloads found in subtree.");
                 return;
             }
-        }
-
-        /// <summary>
-        /// Returns the selected object path or "Assets/" if no object is selected.
-        /// </summary>
-        public static string GetSelectedAssetPath()
-        {
-            Object[] selectedAsset = Selection.GetFiltered(typeof(Object), SelectionMode.Assets);
-            foreach (Object obj in selectedAsset)
-            {
-                var path = AssetDatabase.GetAssetPath(obj.GetInstanceID());
-                if (string.IsNullOrEmpty(path))
-                {
-                    continue;
-                }
-
-                if (File.Exists(path))
-                {
-                    path = Path.GetDirectoryName(path);
-                }
-
-                if (!path.EndsWith("/"))
-                {
-                    path += "/";
-                }
-
-                return path;
-            }
-
-            return "Assets/";
-        }
-
-        public static GameObject UsdToGameObject(GameObject parent,
-            Scene scene,
-            SceneImportOptions importOptions)
-        {
-            try
-            {
-                SceneImporter.ImportUsd(parent, scene, new PrimMap(), importOptions);
-            }
-            finally
-            {
-                scene.Close();
-            }
-
-            return parent;
-        }
-
-        private static string GetObjectName(pxr.SdfPath rootPrimName, string path)
-        {
-            return pxr.UsdCs.TfIsValidIdentifier(rootPrimName.GetName())
-                ? rootPrimName.GetName()
-                : GetObjectName(path);
-        }
-
-        private static string GetObjectName(string path)
-        {
-            return UnityTypeConverter.MakeValidIdentifier(Path.GetFileNameWithoutExtension(path));
-        }
-
-        private static string GetPrefabName(string path)
-        {
-            var fileName = GetObjectName(path);
-            return fileName + "_prefab";
         }
     }
 }
