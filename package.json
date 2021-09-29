@@ -28,15 +28,15 @@
   "repository": {
     "url": "https://github.com/Unity-Technologies/usd-unity-sdk.git",
     "type": "git",
-    "revision": "c60d9742e250cda5fcaf3113bbcb18a754bcfd28"
+    "revision": "596fc81e04affddbfaeb1f383617dfce9f4a4622"
   },
   "unity": "2019.4",
-  "version": "3.0.0-exp.1",
+  "version": "3.0.0-exp.2",
   "relatedPackages": {
-    "com.unity.formats.usd.tests": "3.0.0-exp.1"
+    "com.unity.formats.usd.tests": "3.0.0-exp.2"
   },
   "upmCi": {
-    "footprint": "2494783abfd78e4c55c19870027acbcbb2d0bf93"
+    "footprint": "195b545a9530909f39865bb819bec10bd125b73c"
   },
   "samples": [
     {
