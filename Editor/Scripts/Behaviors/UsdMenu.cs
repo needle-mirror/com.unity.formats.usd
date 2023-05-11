@@ -22,6 +22,9 @@ namespace Unity.Formats.USD
 {
     public static class UsdMenu
     {
+#if !UNITY_EDITOR_WIN
+        [MenuItem("USD/Export Selected with Children as USDA", true)]
+#endif
         [MenuItem("USD/Export Selected with Children", true)]
         static bool EnableMenuExportSelectedWithChildren()
         {
@@ -31,8 +34,26 @@ namespace Unity.Formats.USD
         [MenuItem("USD/Export Selected with Children", priority = 50)]
         static void MenuExportSelectedWithChildren()
         {
+#if UNITY_EDITOR_WIN
+            ExportSelectedWithChildren("usd,usda,usdc");
+#else
+            ExportSelectedWithChildren("usd");
+#endif
+        }
+
+#if !UNITY_EDITOR_WIN
+        [MenuItem("USD/Export Selected with Children as USDA", priority = 50)]
+        static void MenuExportSelectedWithChildrenToUSDA()
+        {
+            ExportSelectedWithChildren("usda");
+        }
+
+#endif
+
+        static void ExportSelectedWithChildren(string fileExtensions)
+        {
             var go = Selection.gameObjects.First();
-            var filePath = EditorUtility.SaveFilePanel("Export USD File", "", go.name, "usd,usda,usdc");
+            var filePath = EditorUtility.SaveFilePanel("Export USD File", "", go.name, fileExtensions);
             var scene = ExportHelpers.InitForSave(filePath);
             ExportHelpers.ExportGameObjects(Selection.gameObjects, scene, BasisTransformation.SlowAndSafe);
         }
@@ -47,7 +68,13 @@ namespace Unity.Formats.USD
         static public void MenuExportTransforms()
         {
             var root = Selection.activeGameObject.GetComponentInParent<UsdAsset>();
-            var filePath = EditorUtility.SaveFilePanel("Export USD File", "", Path.GetFileNameWithoutExtension(root.usdFullPath) + "_overs", "usd,usda,usdc");
+            string fileExtensions;
+#if UNITY_EDITOR_WIN
+            fileExtensions = "usd,usda,usdc";
+#else
+            fileExtensions = "usd";
+#endif
+            var filePath = EditorUtility.SaveFilePanel("Export USD File", "", Path.GetFileNameWithoutExtension(root.usdFullPath) + "_overs", fileExtensions);
             var overs = ExportHelpers.InitForSave(filePath);
             root.ExportOverrides(overs);
         }
@@ -161,7 +188,7 @@ namespace Unity.Formats.USD
                 return;
             }
 
-            ImportHelpers.ImportAsPrefab(scene);
+            ImportHelpers.ImportAsPrefab(scene, null);
         }
 
         [MenuItem("USD/Import as Timeline Clip", priority = 2)]
@@ -173,16 +200,16 @@ namespace Unity.Formats.USD
                 return;
             }
 
-            ImportHelpers.ImportAsTimelineClip(scene);
+            ImportHelpers.ImportAsTimelineClip(scene, null);
         }
 
-        [MenuItem("USD/Unload Subtree", true)]
+        [MenuItem("USD/Unload Payload Subtree", true)]
         static bool EnableMenuUnloadSubtree()
         {
             return Selection.activeGameObject && Selection.activeGameObject.GetComponentInParent<UsdAsset>();
         }
 
-        [MenuItem("USD/Unload Subtree", priority = 100)]
+        [MenuItem("USD/Unload Payload Subtree", priority = 100)]
         public static void MenuUnloadSubtree()
         {
             var src = Selection.activeGameObject.transform;
@@ -215,13 +242,13 @@ namespace Unity.Formats.USD
             }
         }
 
-        [MenuItem("USD/Load Subtree", true)]
+        [MenuItem("USD/Load Payload Subtree", true)]
         static bool EnableMenuLoadSubtree()
         {
             return Selection.activeGameObject && Selection.activeGameObject.GetComponentInParent<UsdAsset>();
         }
 
-        [MenuItem("USD/Load Subtree", priority = 101)]
+        [MenuItem("USD/Load Payload Subtree", priority = 101)]
         public static void MenuLoadSubtree()
         {
             var src = Selection.activeGameObject.transform;

@@ -53,7 +53,8 @@ namespace Unity.Formats.USD
         // Source Asset.
         // ----------------------------------------------------------------------------------------- //
 
-        [Header("Source Asset")][SerializeField]
+        [Header("Source Asset")]
+        [SerializeField]
         string m_usdFile;
 
         [HideInInspector]
@@ -103,7 +104,8 @@ namespace Unity.Formats.USD
         [Tooltip("The default material to use when importing metallic workflow USD Preview Surface materials.")]
         public Material m_metallicWorkflowMaterial;
 
-        [HideInInspector][Tooltip("When enabled, set the GPU Instancing flag on all materials.")]
+        [HideInInspector]
+        [Tooltip("When enabled, set the GPU Instancing flag on all materials.")]
         public bool m_enableGpuInstancing;
 
         // ----------------------------------------------------------------------------------------- //
@@ -130,16 +132,20 @@ namespace Unity.Formats.USD
         [Header("Mesh Lightmap UV Unwrapping")]
         public bool m_generateLightmapUVs;
 
-        [Tooltip("Maximum allowed angle distortion")][Range(0, 1)]
+        [Tooltip("Maximum allowed angle distortion")]
+        [Range(0, 1)]
         public float m_unwrapAngleError = .08f;
 
-        [Tooltip("Maximum allowed area distortion")][Range(0, 1)]
+        [Tooltip("Maximum allowed area distortion")]
+        [Range(0, 1)]
         public float m_unwrapAreaError = .15f;
 
-        [Tooltip("This angle (in degrees) or greater between triangles will cause seam to be created")][Range(1, 359)]
+        [Tooltip("This angle (in degrees) or greater between triangles will cause seam to be created")]
+        [Range(1, 359)]
         public float m_unwrapHardAngle = 88;
 
-        [Tooltip("UV-island padding in pixels")][Range(0, 32)]
+        [Tooltip("UV-island padding in pixels")]
+        [Range(0, 32)]
         public int m_unwrapPackMargin = 4;
 
         // ----------------------------------------------------------------------------------------- //
@@ -222,7 +228,11 @@ namespace Unity.Formats.USD
 #if UNITY_EDITOR
             if (!UnityEditor.EditorUtility.IsPersistent(root))
             {
+#if UNITY_2021_2_OR_NEWER
+                var prefabStage = UnityEditor.SceneManagement.PrefabStageUtility.GetPrefabStage(root);
+#else
                 var prefabStage = UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetPrefabStage(root);
+#endif
                 if (prefabStage != null)
                 {
                     if (!UnityEditor.PrefabUtility.IsPartOfPrefabInstance(root))
@@ -590,6 +600,7 @@ namespace Unity.Formats.USD
             {
                 throw new Exception("Could not open base layer: " + sceneToReference.usdFullPath);
             }
+            overs.AddSubLayer(baseLayer);
 
             overs.Time = baseLayer.Time;
             overs.StartTime = baseLayer.StartTime;
@@ -604,20 +615,20 @@ namespace Unity.Formats.USD
                     overs,
                     BasisTransformation.SlowAndSafe,
                     exportUnvarying: false,
-                    zeroRootTransform: true);
-
-                var rel = ImporterBase.MakeRelativePath(overs.FilePath, sceneToReference.usdFullPath);
-                GetFirstPrim(overs).GetReferences().AddReference(rel, GetFirstPrim(baseLayer).GetPath());
+                    zeroRootTransform: true,
+                    exportOverrides: true);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Debug.LogException(ex);
-                return;
             }
             finally
             {
                 if (overs != null)
                 {
+                    // Remove the reference to the original USD from the override file for flexibility in an asset pipeline
+                    // TODO: Make this an optional setting
+                    overs.Stage.GetRootLayer().GetSubLayerPaths().Erase(0);
                     overs.Save();
                     overs.Close();
                 }
@@ -702,7 +713,7 @@ namespace Unity.Formats.USD
                 foreach (var kvp in m_lastAccessMask.Included)
                 {
                     sb.AppendLine(kvp.Key);
-                    foreach (var member in kvp.Value)
+                    foreach (var member in kvp.Value.dynamicMembers)
                     {
                         sb.AppendLine("  ." + member.Name);
                     }

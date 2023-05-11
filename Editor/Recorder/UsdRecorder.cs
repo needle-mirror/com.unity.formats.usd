@@ -70,6 +70,7 @@ namespace UnityEditor.Formats.USD.Recorder
             context.basisTransform = Settings.BasisTransformation;
             context.activePolicy = Settings.ActivePolicy;
             context.exportMaterials = Settings.ExportMaterials;
+            context.exportTransformOverrides = Settings.ExportTransformOverrides;
 
             context.scale = Settings.Scale;
 
@@ -83,6 +84,13 @@ namespace UnityEditor.Formats.USD.Recorder
 
         protected override void EndRecording(RecordingSession session)
         {
+            // There is a bug in com.unity.recorder v4.0.0 - RecordingSession.Dispose is called twice
+            // context is set to null in the first call and we can ignore the second call
+            if (context == null)
+            {
+                return;
+            }
+
             context.scene.EndTime = session.recorderTime * session.settings.FrameRate;
             context.scene.Save();
             context.scene.Close();
