@@ -28,18 +28,18 @@
   "repository": {
     "url": "https://github.com/Unity-Technologies/usd-unity-sdk.git",
     "type": "git",
-    "revision": "e67acd5dd3bc30c7a3e74f204d069114d735b32c"
+    "revision": "0924a78a238ceace5593b8d7f3cfa29e0bd0ea8c"
   },
   "unity": "2019.4",
-  "version": "3.0.0-exp.3",
+  "version": "3.0.0-exp.4",
   "relatedPackages": {
-    "com.unity.formats.usd.tests": "3.0.0-exp.3"
+    "com.unity.formats.usd.tests": "3.0.0-exp.4"
   },
   "_upm": {
-    "changelog": "### Features\n- The USD Recorder now has an option to export transform overrides.\n\n### Bug Fixes\n- \"Export Transform Override\" now properly exports modified transforms only.\n- Fixed a bug where importing materials exported from USD version >= 21.11 would fail.\n- Fixed loading of meshes with arbitrary primvars.\n- Fixed regression in animated mesh properties.\n- Fixed timeout when importing complex meshes.\n- Fixed a bug on export where SkelRoot and Skeleton Prim were missing class identifiers.\n- Fixed 'ExportSelectedWithChildren' on Mac.\n- Fixed texture mapping for exported meshes.\n- Fixed  a bug causing PointInstances to be duplicated.\n- Fixed regression in JointsMatch().\n- Fixed scene not being marked dirty after changing load payload flag.\n- Fixed exported Prims not having a type and fixed export for objects with same name.\n- Fixed a bug causing an ApplicationException \"all sample times in times and baseTime must either all be numeric or all be default\" to be thrown when refreshing a PointInstancer.\n- Fixed an import bug causing instanced primitives not to be sanitized to fit Unity formats, including converting basis, triangulating and unwinding meshes, and unrolling primvars.\n\n### Changed\n- GC allocs reduced by half for Scene.GetAttributeAtPath and Scene.GetRelationshipAtPath.\n- Disabled plugins on unsupported platforms.\n- Optimized triangulation to reduce the chance of a \"Timed out while waiting for thread\" error on importing a complex mesh.\n- Optimized PointInstance importing."
+    "changelog": "### Features\n- Added EditorAnalytics to track internally which features are most used.\n\n### Bug Fixes\n- Fixed the Samples Assembly Definitions compile errors.\n\n### Changed\n- Updated AppCollector YAML file to reflect latest info.\n- We've removed the USD logo in a few places until we have a formal agreement in place to use it."
   },
   "upmCi": {
-    "footprint": "3723327ca2b9598e824740958be70bb7154357dd"
+    "footprint": "580602a943e3c3cc2f6576e762a03074862c0927"
   },
   "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.formats.usd@3.0/manual/index.html",
   "samples": [

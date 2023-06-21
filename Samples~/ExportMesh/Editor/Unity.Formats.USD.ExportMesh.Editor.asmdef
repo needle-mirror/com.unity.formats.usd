@@ -1,22 +1,20 @@
 {
-    "name": "Unity.Formats.USD.Runtime",
+    "name": "Unity.Formats.USD.ExportMesh.Editor",
+    "rootNamespace": "",
     "references": [
-        "Unity.Timeline",
-        "USD.NET",
-        "USD.NET.Unity",
-        "Unity.Formats.USD.Common"
+        "Unity.Formats.USD.ExportMesh"
     ],
     "includePlatforms": [
-        "Editor",
-        "macOSStandalone",
-        "WindowsStandalone64"
+        "Editor"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [],
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
     "versionDefines": [],
     "noEngineReferences": false
 }

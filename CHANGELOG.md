@@ -1,8 +1,17 @@
 # Changes in usd-unity-sdk for Unity
 
-## Unreleased
+## [3.0.0-exp.4] - 2023-06-21
+### Features
+- Added EditorAnalytics to track internally which features are most used.
 
-## [3.0.0-exp.3] - 2023-05-11
+### Bug Fixes
+- Fixed the Samples Assembly Definitions compile errors.
+
+### Changed
+- Updated AppCollector YAML file to reflect latest info.
+- We've removed the USD logo in a few places until we have a formal agreement in place to use it.
+
+## [3.0.0-exp.3] - 2023-06-20
 ### Features
 - The USD Recorder now has an option to export transform overrides.
 
