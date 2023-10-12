@@ -28,18 +28,18 @@
   "repository": {
     "url": "https://github.com/Unity-Technologies/usd-unity-sdk.git",
     "type": "git",
-    "revision": "0924a78a238ceace5593b8d7f3cfa29e0bd0ea8c"
+    "revision": "fc4f7b10a711706e603d82d98765b463569d0eb1"
   },
   "unity": "2019.4",
-  "version": "3.0.0-exp.4",
+  "version": "3.0.0-exp.5",
   "relatedPackages": {
-    "com.unity.formats.usd.tests": "3.0.0-exp.4"
+    "com.unity.formats.usd.tests": "3.0.0-exp.5"
   },
   "_upm": {
-    "changelog": "### Features\n- Added EditorAnalytics to track internally which features are most used.\n\n### Bug Fixes\n- Fixed the Samples Assembly Definitions compile errors.\n\n### Changed\n- Updated AppCollector YAML file to reflect latest info.\n- We've removed the USD logo in a few places until we have a formal agreement in place to use it."
+    "changelog": "### Features\n- Added basic URP Import support.\n\n### Bug Fixes\n- Fixed export for Prefabs from the Project Window.\n- Fixed export of URP base and occlusion maps for Lit shader.\n- Fixed USD component removal workflows for Prefabs.\n- Fixed transparency import for URP only.\n- Fixed exports to apply UsdShadeMaterialBindingAPI/UsdSkelBindingAPI APIs where appropriate.\n- Fixed exports to include metersPerUnit stage-level metadata.\n\n### Changed\n- Renamed USD.md in the Documentation folder to index.md to match documentation generation standards for landing pages.\n- Updated link in README.md to point to newly named index.md"
   },
   "upmCi": {
-    "footprint": "580602a943e3c3cc2f6576e762a03074862c0927"
+    "footprint": "4e8fbc38ac9b1e471ec012022637edb90c6f65b3"
   },
   "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.formats.usd@3.0/manual/index.html",
   "samples": [

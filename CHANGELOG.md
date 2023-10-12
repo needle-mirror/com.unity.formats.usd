@@ -1,5 +1,21 @@
 # Changes in usd-unity-sdk for Unity
 
+## [3.0.0-exp.5] - 2023-10-12
+### Features
+- Added basic URP Import support.
+
+### Bug Fixes
+- Fixed export for Prefabs from the Project Window.
+- Fixed export of URP base and occlusion maps for Lit shader.
+- Fixed USD component removal workflows for Prefabs.
+- Fixed transparency import for URP only.
+- Fixed exports to apply UsdShadeMaterialBindingAPI/UsdSkelBindingAPI APIs where appropriate.
+- Fixed exports to include metersPerUnit stage-level metadata.
+
+### Changed
+- Renamed USD.md in the Documentation folder to index.md to match documentation generation standards for landing pages.
+- Updated link in README.md to point to newly named index.md
+
 ## [3.0.0-exp.4] - 2023-06-21
 ### Features
 - Added EditorAnalytics to track internally which features are most used.
